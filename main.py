@@ -6,11 +6,13 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 1
+WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 reps = 0
 timer = None
+is_paused=False
+paused_time = 0
 
 # ---------------------------- TIMER RESET ------------------------------- #
 
@@ -64,6 +66,23 @@ def count_down(count):
             marks += "✔"
         check_marks.config(text=marks)
 
+def pause():
+    global is_paused, paused_time
+    if not is_paused:
+        paused_time = remaining_time()
+        window.after_cancel(timer)
+        is_paused = True
+
+def remaining_time():
+    current_text = canvas.itemcget(timer_text, "text")
+    mins, secs = map(int, current_text.split(":"))
+    return mins * 60 + secs
+def resume():
+    global is_paused
+    if is_paused:
+        count_down(paused_time)
+        is_paused = False
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
@@ -84,7 +103,15 @@ start_button = Button(text="Start", highlightthickness=0, command=start_timer)
 start_button.grid(column=0, row=2)
 
 reset_button = Button(text="Reset", highlightthickness=0, command=reset_timer)
-reset_button.grid(column=2, row=2)
+reset_button.grid(column=0, row=3)
+
+pause_button = Button(text="Pause", highlightthickness=0,borderwidth=0 , command=pause)
+pause_button.grid(column=3, row=2)
+
+resume_button = Button(text="Resume", highlightthickness=0,borderwidth=0 ,command=resume)
+resume_button.grid(column=3, row=3)
+
+
 
 check_marks = Label(fg=GREEN, bg=YELLOW)
 check_marks.grid(column=1, row=3)
