@@ -12,6 +12,8 @@ SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 reps=0
 timer = None
+is_paused=False
+paused_time = 0
 
 # ---------------------------- TIMER RESET ------------------------------- # 
 
@@ -46,6 +48,10 @@ def start_timer():
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 def count_down(count):
+    global remaining_time
+    global timer
+    remaining_time = count
+
     # print(count)
     count_min=math.floor(count/60)
     count_sec= count % 60
@@ -65,6 +71,16 @@ def count_down(count):
 
         tick.config(text=mark)
 
+def pause_timer():
+    global is_paused,paused_time
+    if not is_paused:
+        window.after_cancel(timer)
+        is_paused = True
+def resume_timer():
+    global is_paused
+    if is_paused:
+        count_down(remaining_time)
+        is_paused = False
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -85,11 +101,18 @@ title_label=Label(text="Timer", fg=GREEN, font=(FONT_NAME, 35), bg=PINK)
 title_label.grid(column=2, row=0)
 
 
-button = Button(text="Start",highlightthickness=0,command=start_timer)
+button = Button(text="Start",highlightthickness=0,borderwidth=0,command=start_timer)
 button.grid(column=0,row=3)
 
-restart_button=Button(text="restart",highlightthickness=0,command=reset_timer)
-restart_button.grid(column=3,row=3)
+restart_button=Button(text="restart",highlightthickness=0,borderwidth=0 ,command=reset_timer)
+restart_button.grid(column=0,row=5)
+
+pause_button = Button(text="Pause", highlightthickness=0,borderwidth=0 , command=pause_timer)
+pause_button.grid(column=3, row=3)
+
+resume_button = Button(text="Resume", highlightthickness=0,borderwidth=0 ,command=resume_timer)
+resume_button.grid(column=3, row=5)
+
 
 tick=Label(fg=GREEN,bg=PINK)
 tick.grid(column=2, row=4)
